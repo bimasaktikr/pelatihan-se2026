@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-// Konfigurasi Menu Kuis (Hanya ASYNC_1 yang aktif)
+// Konfigurasi internal status keaktifan menu kuis
 const QUIZ_CONFIG = [
   { id: 'PRETEST',     num: '01', title: 'PRETEST',     desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
   { id: 'POST_TEST',   num: '02', title: 'POST TEST',   desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: false },
@@ -16,12 +16,19 @@ export default function CommandCenterGateway() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   
-  // State untuk mengontrol apakah di Dashboard atau di dalam Iframe Kuis
+  // State navigasi tampilan
   const [currentView, setCurrentView] = useState<'DASHBOARD' | 'IFRAME'>('DASHBOARD');
   const [activeQuizParam, setActiveQuizParam] = useState<string>('');
 
-  // 🚨 PASTE LINK PUBLISH TO WEB (CSV) GOOGLE SHEETS ANDA DI SINI
+  // =========================================================================
+  // 🚨 AREA PORTAL LINK CONFIGURATION (PUSAT KENDALI)
+  // =========================================================================
+  // 1. Link API CSV Google Sheets Tab Config Anda
   const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
+
+  // 2. Link Google Drive Tempat Menyimpan Folder/File Materi Pelatihan SE2026
+  const MATERI_GDRIVE_URL = "https://drive.google.com/drive/folders/1LeTT5syakgNUVtOyuPYIeW6kGrSg_2BJ";
+  // =========================================================================
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -40,9 +47,9 @@ export default function CommandCenterGateway() {
         }
 
         if (foundUrl) setGasUrl(foundUrl);
-        else setError('GAS_URL tidak ditemukan di Config.');
+        else setError('GAS_URL tidak ditemukan di Master Config Spreadsheet.');
       } catch (err) {
-        setError('Gagal terhubung ke server Command Center.');
+        setError('Gagal sinkronisasi dengan server induk Command Center.');
       } finally {
         setIsLoading(false);
       }
@@ -50,25 +57,24 @@ export default function CommandCenterGateway() {
     fetchConfig();
   }, []);
 
-  // Fungsi saat kuis diklik
   const handleQuizClick = (id: string) => {
     if (id === 'ASYNC_1') {
-      setActiveQuizParam('Async1'); // Ini akan menjadi ?page=Async1 di URL GAS
+      setActiveQuizParam('Async1');
       setCurrentView('IFRAME');
     }
   };
 
-  // --- LAYAR 1: LOADING ---
+  // --- LAYAR 1: LOADING REAKTOR ---
   if (isLoading) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center bg-slate-950 text-cyan-400 font-mono">
         <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="animate-pulse tracking-widest text-sm">MENGHUBUNGKAN KE COMMAND CENTER...</p>
+        <p className="animate-pulse tracking-widest text-sm">SINKRONISASI INSTRUMEN CONFIG...</p>
       </div>
     );
   }
 
-  // --- LAYAR 2: ERROR ---
+  // --- LAYAR 2: ERROR PORTAL ---
   if (error || !gasUrl) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-slate-950 text-rose-500">
@@ -77,21 +83,40 @@ export default function CommandCenterGateway() {
     );
   }
 
-  // --- LAYAR 3: DASHBOARD NEXT.JS (MENU UTAMA) ---
+  // --- LAYAR 3: DASHBOARD UTAMA NEXT.JS ---
   if (currentView === 'DASHBOARD') {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 flex flex-col items-center">
         <div className="w-full max-w-5xl mt-12 animate-fade-in">
-          <div className="text-center mb-12">
+          
+          {/* Header Portal */}
+          <div class="text-center mb-12 flex flex-col items-center">
             <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
               Portal Evaluasi Sentral
             </span>
             <h1 className="text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 mt-4">
               COMMAND CENTER SE2026
             </h1>
-            <p className="text-slate-400 text-sm mt-3">Pilih modul pengujian di bawah ini untuk memulai evaluasi lapangan.</p>
+            <p className="text-slate-400 text-sm mt-3 max-w-xl">
+              Selamat datang di pusat pengujian kompetensi dan pembelajaran mandiri petugas Sensus Ekonomi 2026.
+            </p>
+
+            {/* 📥 NEW FEATURE: TOMBOL DOWNLOAD MATERI GDRIVE */}
+            <div className="mt-6">
+              <a 
+                href={MATERI_GDRIVE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-xl shadow-lg hover:shadow-indigo-500/20 hover:scale-[1.02] transition-all duration-200 border border-indigo-500/30"
+              >
+                <span class="text-base">Buka Repository</span>
+                <span>📂</span>
+                <span>DOWNLOAD MATERI PELATIHAN (GDRIVE)</span>
+              </a>
+            </div>
           </div>
 
+          {/* Grid Kuis Modular */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {QUIZ_CONFIG.map(quiz => (
               quiz.active ? (
@@ -123,28 +148,29 @@ export default function CommandCenterGateway() {
     );
   }
 
-  // --- LAYAR 4: IFRAME KUIS (JIKA MENU DIKLIK) ---
+  // --- LAYAR 4: SUB-IFRAME RUNNER (MODUL KUIS AKTIF) ---
   return (
     <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden">
-      {/* Tombol Back ke Dashboard */}
+      {/* Top Utility Bar */}
       <div className="bg-slate-950 border-b border-slate-800 p-3 flex justify-between items-center shadow-md z-10">
         <button 
           onClick={() => setCurrentView('DASHBOARD')}
-          className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2"
+          className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 border border-slate-700/50"
         >
-          ← KEMBALI KE MENU
+          ← KEMBALI KE PORTAL DASHBOARD
         </button>
-        <div className="text-cyan-500 font-mono text-xs font-bold tracking-widest">
-          SYSTEM ACTIVE
+        <div className="text-cyan-500 font-mono text-xs font-bold tracking-widest animate-pulse flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-cyan-500 block"></span>
+          REKOR DATA AKTIF
         </div>
       </div>
       
-      {/* Menembak Iframe dengan Parameter Kuis */}
+      {/* Iframe injection parameter dinamis page sesuai rute Sheets */}
       <iframe
         src={`${gasUrl}?page=${activeQuizParam}`}
         className="w-full flex-1 border-0"
         allowFullScreen
-        title="Kuis Evaluasi SE2026"
+        title="Kuis Evaluasi Lapangan SE2026"
       />
     </div>
   );
