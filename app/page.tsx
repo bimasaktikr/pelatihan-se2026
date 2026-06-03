@@ -1,65 +1,151 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useEffect, useState } from 'react';
+
+// Konfigurasi Menu Kuis (Hanya ASYNC_1 yang aktif)
+const QUIZ_CONFIG = [
+  { id: 'PRETEST',     num: '01', title: 'PRETEST',     desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
+  { id: 'POST_TEST',   num: '02', title: 'POST TEST',   desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: false },
+  { id: 'ASYNC_1',     num: '03', title: 'ASYNC 1',     desc: 'Tugas Latihan Hari Pertama - Kasus Keluarga Pak Amran.', active: true },
+  { id: 'ASYNC_2',     num: '04', title: 'ASYNC 2',     desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: false },
+  { id: 'PENDALAMAN',  num: '05', title: 'PENDALAMAN',  desc: 'Studi kasus kompleks penanganan rekapitulasi SLS non-responden.', active: false }
+];
+
+export default function CommandCenterGateway() {
+  const [gasUrl, setGasUrl] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+  
+  // State untuk mengontrol apakah di Dashboard atau di dalam Iframe Kuis
+  const [currentView, setCurrentView] = useState<'DASHBOARD' | 'IFRAME'>('DASHBOARD');
+  const [activeQuizParam, setActiveQuizParam] = useState<string>('');
+
+  // 🚨 PASTE LINK PUBLISH TO WEB (CSV) GOOGLE SHEETS ANDA DI SINI
+  const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch(CONFIG_CSV_URL, { cache: 'no-store' });
+        const csvText = await response.text();
+        const rows = csvText.split('\n');
+        
+        let foundUrl = '';
+        for (let i = 1; i < rows.length; i++) {
+          const [key, ...valueArr] = rows[i].split(','); 
+          if (key && key.trim() === 'GAS_URL') {
+            foundUrl = valueArr.join(',').trim().replace(/^"|"$/g, ''); 
+            break;
+          }
+        }
+
+        if (foundUrl) setGasUrl(foundUrl);
+        else setError('GAS_URL tidak ditemukan di Config.');
+      } catch (err) {
+        setError('Gagal terhubung ke server Command Center.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  // Fungsi saat kuis diklik
+  const handleQuizClick = (id: string) => {
+    if (id === 'ASYNC_1') {
+      setActiveQuizParam('Async1'); // Ini akan menjadi ?page=Async1 di URL GAS
+      setCurrentView('IFRAME');
+    }
+  };
+
+  // --- LAYAR 1: LOADING ---
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex flex-col items-center justify-center bg-slate-950 text-cyan-400 font-mono">
+        <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="animate-pulse tracking-widest text-sm">MENGHUBUNGKAN KE COMMAND CENTER...</p>
+      </div>
+    );
+  }
+
+  // --- LAYAR 2: ERROR ---
+  if (error || !gasUrl) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-slate-950 text-rose-500">
+        <p className="font-mono tracking-wider">⚠️ {error}</p>
+      </div>
+    );
+  }
+
+  // --- LAYAR 3: DASHBOARD NEXT.JS (MENU UTAMA) ---
+  if (currentView === 'DASHBOARD') {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 flex flex-col items-center">
+        <div className="w-full max-w-5xl mt-12 animate-fade-in">
+          <div className="text-center mb-12">
+            <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+              Portal Evaluasi Sentral
+            </span>
+            <h1 className="text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 mt-4">
+              COMMAND CENTER SE2026
+            </h1>
+            <p className="text-slate-400 text-sm mt-3">Pilih modul pengujian di bawah ini untuk memulai evaluasi lapangan.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {QUIZ_CONFIG.map(quiz => (
+              quiz.active ? (
+                <div key={quiz.id} onClick={() => handleQuizClick(quiz.id)} className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl cursor-pointer hover:border-cyan-500 hover:scale-[1.02] transition-all group relative overflow-hidden">
+                  <div className="absolute top-0 right-0 bg-cyan-500 text-slate-950 text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase">Terbuka</div>
+                  <div className="bg-cyan-500/10 text-cyan-400 w-12 h-12 rounded-xl flex items-center justify-center mb-4 font-black group-hover:bg-cyan-500 group-hover:text-slate-950 transition duration-300">
+                    {quiz.num}
+                  </div>
+                  <h2 className="text-xl font-bold tracking-wide text-slate-100 mb-2">{quiz.title}</h2>
+                  <p className="text-slate-400 text-xs leading-relaxed">{quiz.desc}</p>
+                </div>
+              ) : (
+                <div key={quiz.id} className="bg-slate-900/40 p-6 rounded-2xl border border-slate-800/50 shadow-xl opacity-50 cursor-not-allowed relative group">
+                  <div className="absolute top-0 right-0 bg-slate-800 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase">🔒 Terkunci</div>
+                  <div className="bg-slate-800 text-slate-500 w-12 h-12 rounded-xl flex items-center justify-center mb-4 font-black">
+                    {quiz.num}
+                  </div>
+                  <h2 className="text-xl font-bold tracking-wide text-slate-500 mb-2">{quiz.title}</h2>
+                  <p className="text-slate-600 text-xs leading-relaxed">{quiz.desc}</p>
+                  <div className="mt-4 inline-block bg-slate-800/50 border border-slate-700/30 text-slate-400 text-[10px] px-2 py-0.5 rounded font-mono">
+                    Coming Soon
+                  </div>
+                </div>
+              )
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- LAYAR 4: IFRAME KUIS (JIKA MENU DIKLIK) ---
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden">
+      {/* Tombol Back ke Dashboard */}
+      <div className="bg-slate-950 border-b border-slate-800 p-3 flex justify-between items-center shadow-md z-10">
+        <button 
+          onClick={() => setCurrentView('DASHBOARD')}
+          className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2"
+        >
+          ← KEMBALI KE MENU
+        </button>
+        <div className="text-cyan-500 font-mono text-xs font-bold tracking-widest">
+          SYSTEM ACTIVE
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
+      
+      {/* Menembak Iframe dengan Parameter Kuis */}
+      <iframe
+        src={`${gasUrl}?page=${activeQuizParam}`}
+        className="w-full flex-1 border-0"
+        allowFullScreen
+        title="Kuis Evaluasi SE2026"
+      />
     </div>
   );
 }
