@@ -109,7 +109,8 @@ export default function CommandCenterGateway() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-xl shadow-lg hover:shadow-indigo-500/20 hover:scale-[1.02] transition-all duration-200 border border-indigo-500/30"
               >
-                <span class="text-base">Buka Repository</span>
+                {/* <span class="text-base">Buka Repository</span> */}
+                <span className="text-base">Buka Repository</span>
                 <span>📂</span>
                 <span>DOWNLOAD MATERI PELATIHAN (GDRIVE)</span>
               </a>
