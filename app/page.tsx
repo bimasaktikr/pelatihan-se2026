@@ -90,7 +90,7 @@ export default function CommandCenterGateway() {
         <div className="w-full max-w-5xl mt-12 animate-fade-in">
           
           {/* Header Portal */}
-          <div class="text-center mb-12 flex flex-col items-center">
+          <div className="text-center mb-12 flex flex-col items-center">
             <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
               Portal Evaluasi Sentral
             </span>
@@ -109,11 +109,24 @@ export default function CommandCenterGateway() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-xs tracking-wider uppercase px-6 py-3 rounded-xl shadow-lg hover:shadow-indigo-500/20 hover:scale-[1.02] transition-all duration-200 border border-indigo-500/30"
               >
-                {/* <span class="text-base">Buka Repository</span> */}
                 <span className="text-base">Buka Repository</span>
                 <span>📂</span>
                 <span>DOWNLOAD MATERI PELATIHAN (GDRIVE)</span>
               </a>
+            </div>
+
+            {/* // 1. Tambahkan tombol di bagian bawah Header (setelah tombol download materi) */}
+            <div className="mt-4">
+              <button 
+                onClick={() => {
+                  // Kita arahkan ke URL Monitoring dengan verifikasi email via GAS
+                  const currentUrl = window.location.href.split('?')[0];
+                  window.location.href = `${gasUrl}?page=Monitoring`;
+                }}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[10px] uppercase px-4 py-2 rounded-lg border border-slate-700 transition"
+              >
+                Login Monitoring Pegawai
+              </button>
             </div>
           </div>
 
