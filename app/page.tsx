@@ -95,7 +95,7 @@ export default function CommandCenterGateway() {
               Portal Evaluasi Sentral
             </span>
             <h1 className="text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 mt-4">
-              COMMAND CENTER SE2026
+              Pelatihan SE2026 BPS Kota Malang
             </h1>
             <p className="text-slate-400 text-sm mt-3 max-w-xl">
               Selamat datang di pusat pengujian kompetensi dan pembelajaran mandiri petugas Sensus Ekonomi 2026.
