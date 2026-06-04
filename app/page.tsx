@@ -1,32 +1,31 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Konfigurasi internal status keaktifan menu kuis
 const QUIZ_CONFIG = [
   { id: 'PRETEST',    num: '01', title: 'PRETEST',    desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
   { id: 'POST_TEST',  num: '02', title: 'POST TEST',  desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: false },
   { id: 'ASYNC_1',    num: '03', title: 'ASYNC 1',    desc: 'Tugas Latihan Hari Pertama - Kasus Keluarga Pak Amran.', active: true },
-  // 🟢 PERBAIKAN 1: Ubah active menjadi true
   { id: 'ASYNC_2',    num: '04', title: 'ASYNC 2',    desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: true },
   { id: 'PENDALAMAN', num: '05', title: 'PENDALAMAN', desc: 'Studi kasus kompleks penanganan rekapitulasi SLS non-responden.', active: false }
 ];
 
-export default function CommandCenterGateway() {
+// Sub-Komponen Utama agar aman dari Error Hydration Build Next.js
+function PortalGatewayContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 🟢 1. BACA PARAMETER URL SECARA NATIF (Otomatis bertahan saat di-refresh!)
+  const activeModulParam = searchParams.get('modul') || ''; 
+
   const [gasUrl, setGasUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   
-  // State navigasi tampilan
-  const [currentView, setCurrentView] = useState<'DASHBOARD' | 'IFRAME'>('DASHBOARD');
-  const [activeQuizParam, setActiveQuizParam] = useState<string>('');
-
-  // =========================================================================
-  // 🚨 AREA PORTAL LINK CONFIGURATION (PUSAT KENDALI)
-  // =========================================================================
   const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
   const MATERI_GDRIVE_URL = "https://drive.google.com/drive/folders/1LeTT5syakgNUVtOyuPYIeW6kGrSg_2BJ";
-  // =========================================================================
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -55,18 +54,15 @@ export default function CommandCenterGateway() {
     fetchConfig();
   }, []);
 
+  // 🟢 2. MENGUBAH URL SECARA RESMI MELALUI ROUTER NEXT.JS
   const handleQuizClick = (id: string) => {
-    // 🟢 PERBAIKAN 2: Tambahkan routing untuk ASYNC_2
     if (id === 'ASYNC_1') {
-      setActiveQuizParam('Async1');
-      setCurrentView('IFRAME');
+      router.push('?modul=Async1');
     } else if (id === 'ASYNC_2') {
-      setActiveQuizParam('Async2');
-      setCurrentView('IFRAME');
+      router.push('?modul=Async2');
     }
   };
 
-  // --- LAYAR 1: LOADING REAKTOR ---
   if (isLoading) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center bg-slate-950 text-cyan-400 font-mono">
@@ -76,7 +72,6 @@ export default function CommandCenterGateway() {
     );
   }
 
-  // --- LAYAR 2: ERROR PORTAL ---
   if (error || !gasUrl) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-slate-950 text-rose-500">
@@ -85,8 +80,8 @@ export default function CommandCenterGateway() {
     );
   }
 
-  // --- LAYAR 3: DASHBOARD UTAMA NEXT.JS ---
-  if (currentView === 'DASHBOARD') {
+  // 🟢 3. LOGIKA KONTROL VIEW BERDASARKAN URL PARAMETER
+  if (activeModulParam === '') {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 flex flex-col items-center">
         <div className="w-full max-w-5xl mt-12 animate-fade-in">
@@ -103,7 +98,7 @@ export default function CommandCenterGateway() {
               Selamat datang di pusat pengujian kompetensi dan pembelajaran mandiri petugas Sensus Ekonomi 2026.
             </p>
 
-            {/* Tombol Download Materi */}
+            {/* Tombol Download */}
             <div className="mt-6">
               <a 
                 href={MATERI_GDRIVE_URL}
@@ -117,13 +112,10 @@ export default function CommandCenterGateway() {
               </a>
             </div>
 
-            {/* Tombol Portal Instruktur */}
+            {/* Tombol Instruktur */}
             <div className="mt-8">
               <button 
-                onClick={() => {
-                  setActiveQuizParam('PortalInstruktur');
-                  setCurrentView('IFRAME');
-                }}
+                onClick={() => router.push('?modul=PortalInstruktur')}
                 className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-lg shadow-lg shadow-indigo-500/30 transition flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -164,13 +156,13 @@ export default function CommandCenterGateway() {
     );
   }
 
-  // --- LAYAR 4: SUB-IFRAME RUNNER (MODUL KUIS AKTIF) ---
+  // 🟢 4. LAYAR SUB-IFRAME RUNNER (JIKA PARAMETER URL TERISI)
   return (
     <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden">
       {/* Top Utility Bar */}
       <div className="bg-slate-950 border-b border-slate-800 p-3 flex justify-between items-center shadow-md z-10">
         <button 
-          onClick={() => setCurrentView('DASHBOARD')}
+          onClick={() => router.push('/')} // Balikkan URL ke Kosong Resmi
           className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 border border-slate-700/50"
         >
           ← KEMBALI KE PORTAL DASHBOARD
@@ -181,13 +173,25 @@ export default function CommandCenterGateway() {
         </div>
       </div>
       
-      {/* Iframe injection parameter dinamis page sesuai rute Sheets */}
       <iframe
-        src={`${gasUrl}?page=${activeQuizParam}`}
+        src={`${gasUrl}?page=${activeModulParam}`}
         className="w-full flex-1 border-0"
         allowFullScreen
         title="Kuis Evaluasi Lapangan SE2026"
       />
     </div>
+  );
+}
+
+// Wrapper Suspense (Wajib di Next.js App Router saat memakai useSearchParams)
+export default function CommandCenterGateway() {
+  return (
+    <Suspense fallback={
+      <div className="w-full h-screen flex flex-col items-center justify-center bg-slate-950 text-cyan-400 font-mono">
+        <p className="animate-pulse tracking-widest text-sm">MEMUAT ENGINE NAVIGASI...</p>
+      </div>
+    }>
+      <PortalGatewayContent />
+    </Suspense>
   );
 }
