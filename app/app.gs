@@ -191,7 +191,7 @@ function simpanJawabanAsync1(payload) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const map = CONFIG.QUIZ['ASYNC_1'];
   const sheetResp = ss.getSheetByName(map.tabResponse);
-  const sheetDb = ss.getSheetByName(CONFIG.DB_SHEET);
+  const sheetDb = ss.getSheetByName(CONFIG.DB_SHEET);   
   
   // 1. Siapkan baris array: 5 metadata + 29 soal
   // Metadata: [0]Timestamp, [1]Reason, [2]Nama, [3]ID, [4]Skor

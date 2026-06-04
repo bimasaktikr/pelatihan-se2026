@@ -4,11 +4,12 @@ import React, { useEffect, useState } from 'react';
 
 // Konfigurasi internal status keaktifan menu kuis
 const QUIZ_CONFIG = [
-  { id: 'PRETEST',     num: '01', title: 'PRETEST',     desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
-  { id: 'POST_TEST',   num: '02', title: 'POST TEST',   desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: false },
-  { id: 'ASYNC_1',     num: '03', title: 'ASYNC 1',     desc: 'Tugas Latihan Hari Pertama - Kasus Keluarga Pak Amran.', active: true },
-  { id: 'ASYNC_2',     num: '04', title: 'ASYNC 2',     desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: true },
-  { id: 'PENDALAMAN',  num: '05', title: 'PENDALAMAN',  desc: 'Studi kasus kompleks penanganan rekapitulasi SLS non-responden.', active: false }
+  { id: 'PRETEST',    num: '01', title: 'PRETEST',    desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
+  { id: 'POST_TEST',  num: '02', title: 'POST TEST',  desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: false },
+  { id: 'ASYNC_1',    num: '03', title: 'ASYNC 1',    desc: 'Tugas Latihan Hari Pertama - Kasus Keluarga Pak Amran.', active: true },
+  // 🟢 PERBAIKAN 1: Ubah active menjadi true
+  { id: 'ASYNC_2',    num: '04', title: 'ASYNC 2',    desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: true },
+  { id: 'PENDALAMAN', num: '05', title: 'PENDALAMAN', desc: 'Studi kasus kompleks penanganan rekapitulasi SLS non-responden.', active: false }
 ];
 
 export default function CommandCenterGateway() {
@@ -23,10 +24,7 @@ export default function CommandCenterGateway() {
   // =========================================================================
   // 🚨 AREA PORTAL LINK CONFIGURATION (PUSAT KENDALI)
   // =========================================================================
-  // 1. Link API CSV Google Sheets Tab Config Anda
   const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
-
-  // 2. Link Google Drive Tempat Menyimpan Folder/File Materi Pelatihan SE2026
   const MATERI_GDRIVE_URL = "https://drive.google.com/drive/folders/1LeTT5syakgNUVtOyuPYIeW6kGrSg_2BJ";
   // =========================================================================
 
@@ -58,8 +56,12 @@ export default function CommandCenterGateway() {
   }, []);
 
   const handleQuizClick = (id: string) => {
+    // 🟢 PERBAIKAN 2: Tambahkan routing untuk ASYNC_2
     if (id === 'ASYNC_1') {
       setActiveQuizParam('Async1');
+      setCurrentView('IFRAME');
+    } else if (id === 'ASYNC_2') {
+      setActiveQuizParam('Async2');
       setCurrentView('IFRAME');
     }
   };
@@ -101,7 +103,7 @@ export default function CommandCenterGateway() {
               Selamat datang di pusat pengujian kompetensi dan pembelajaran mandiri petugas Sensus Ekonomi 2026.
             </p>
 
-            {/* 📥 NEW FEATURE: TOMBOL DOWNLOAD MATERI GDRIVE */}
+            {/* Tombol Download Materi */}
             <div className="mt-6">
               <a 
                 href={MATERI_GDRIVE_URL}
@@ -115,21 +117,19 @@ export default function CommandCenterGateway() {
               </a>
             </div>
 
-          <div className="mt-8">
-            <button 
-              onClick={() => {
-                // Buka di dalam Iframe Next.js, bukan pindah URL
-                setActiveQuizParam('PortalInstruktur');
-                setCurrentView('IFRAME');
-              }}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-lg shadow-lg shadow-indigo-500/30 transition flex items-center justify-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-              Login Portal Instruktur
-            </button>
-          </div>
-
-            {/* // 1. Tambahkan tombol di bagian bawah Header (setelah tombol download materi) */}
+            {/* Tombol Portal Instruktur */}
+            <div className="mt-8">
+              <button 
+                onClick={() => {
+                  setActiveQuizParam('PortalInstruktur');
+                  setCurrentView('IFRAME');
+                }}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-lg shadow-lg shadow-indigo-500/30 transition flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                Login Portal Instruktur
+              </button>
+            </div>
           </div>
 
           {/* Grid Kuis Modular */}
