@@ -115,19 +115,21 @@ export default function CommandCenterGateway() {
               </a>
             </div>
 
+          <div className="mt-8">
+            <button 
+              onClick={() => {
+                // Buka di dalam Iframe Next.js, bukan pindah URL
+                setActiveQuizParam('PortalInstruktur');
+                setCurrentView('IFRAME');
+              }}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-lg shadow-lg shadow-indigo-500/30 transition flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+              Login Portal Instruktur
+            </button>
+          </div>
+
             {/* // 1. Tambahkan tombol di bagian bawah Header (setelah tombol download materi) */}
-            <div className="mt-4">
-              <button 
-                onClick={() => {
-                  // Kita arahkan ke URL Monitoring dengan verifikasi email via GAS
-                  const currentUrl = window.location.href.split('?')[0];
-                  window.location.href = `${gasUrl}?page=Monitoring`;
-                }}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[10px] uppercase px-4 py-2 rounded-lg border border-slate-700 transition"
-              >
-                Login Monitoring Pegawai
-              </button>
-            </div>
           </div>
 
           {/* Grid Kuis Modular */}
