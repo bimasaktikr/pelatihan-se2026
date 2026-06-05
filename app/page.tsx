@@ -251,7 +251,7 @@ function PortalGatewayContent() {
       </div>
       
       <iframe
-        src={`${gasUrl}?page=${activeModulParam}&cachebuster=${iframeBuster}`}
+        src={`${gasUrl}?page=${activeModulParam}`}
         className="w-full flex-1 border-0"
         allowFullScreen
         title="Kuis Evaluasi Lapangan SE2026"
