@@ -11,7 +11,7 @@ const QUIZ_CONFIG = [
   { id: 'POST_TEST',  num: '02', title: 'POST TEST',  desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: false },
   { id: 'ASYNC_1',    num: '03', title: 'ASYNC 1',    desc: 'Tugas Latihan Hari Pertama - Kasus Keluarga Pak Amran.', active: true },
   { id: 'ASYNC_2',    num: '04', title: 'ASYNC 2',    desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: true },
-  { id: 'PENDALAMAN', num: '05', title: 'PENDALAMAN', desc: 'Studi kasus kompleks penanganan rekapitulasi SLS non-responden.', active: false }
+  { id: 'PENDALAMAN', num: '05', title: 'PENDALAMAN', desc: 'Soal Pendalaman Pelatihan SE2026', active: true }
 ];
 
 const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
