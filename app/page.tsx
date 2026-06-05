@@ -211,21 +211,6 @@ function PortalGatewayContent() {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  // LAYAR RUNNER KUIS (IFRAME)
-  return (
-    <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden relative">
-      <div className="bg-slate-950 border-b border-slate-800 p-3 flex justify-between items-center shadow-md z-10">
-        <button 
-          onClick={() => router.push('/')} 
-          className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 border border-slate-700/50"
-        >
-          ← KEMBALI KE PORTAL DASHBOARD
-        </button>
-        
         <div className="flex items-center gap-4">
           {/* TOMBOL FORCE REFRESH CACHE BUSTER */}
           <button
@@ -247,6 +232,22 @@ function PortalGatewayContent() {
             REKOR DATA AKTIF
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // LAYAR RUNNER KUIS (IFRAME)
+  return (
+    <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden relative">
+      <div className="bg-slate-950 border-b border-slate-800 p-3 flex justify-between items-center shadow-md z-10">
+        <button 
+          onClick={() => router.push('/')} 
+          className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 border border-slate-700/50"
+        >
+          ← KEMBALI KE PORTAL DASHBOARD
+        </button>
+        
+        
       </div>
       
       <iframe
