@@ -4,7 +4,7 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // =========================================================================
-// 🟢 VARIABEL GLOBAL (AMAN DARI SCOPE ERROR)
+// 🟢 VARIABEL GLOBAL
 // =========================================================================
 const QUIZ_CONFIG = [
   { id: 'PRETEST',    num: '01', title: 'PRETEST',    desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
@@ -23,11 +23,9 @@ const MATERI_GDRIVE_URL = "https://drive.google.com/drive/folders/1LeTT5syakgNUV
 function PortalGatewayContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // Parameter URL Natif
   const activeModulParam = searchParams.get('modul') || ''; 
 
-  // Kumpulan State (WAJIB di dalam fungsi komponen)
+  // Menggunakan State Dinamis (Tarik dari CSV)
   const [gasUrl, setGasUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
@@ -35,6 +33,7 @@ function PortalGatewayContent() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [iframeBuster, setIframeBuster] = useState<number>(0);
 
+  // Misi: Menarik Data Config dari CSV
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -44,10 +43,12 @@ function PortalGatewayContent() {
         
         let foundUrl = '';
         for (let i = 1; i < rows.length; i++) {
-          const [key, ...valueArr] = rows[i].split(','); 
-          if (key && key.trim() === 'GAS_URL') {
-            // 🟢 PERBAIKAN 1: Pembersih Koma di Initial Load
-            foundUrl = valueArr.join(',').replace(/,+$/, '').trim().replace(/^"|"$/g, ''); 
+          const cols = rows[i].split(','); 
+          const key = cols[0]?.trim();
+          
+          if (key === 'GAS_URL') {
+            // 🟢 Taktik Presisi: Hanya ambil Kolom B (cols[1]), abaikan koma CSV sisanya
+            foundUrl = cols[1]?.trim().replace(/^"|"$/g, ''); 
             break;
           }
         }
@@ -69,7 +70,7 @@ function PortalGatewayContent() {
     else if (id === 'PENDALAMAN') router.push('?modul=Pendalaman');
   };
 
-  // Fungsi Force Refresh Config dari Spreadsheet (Anti-Cache)
+  // Fungsi Force Refresh Config dari Spreadsheet
   const handleForceRefreshConfig = async () => {
     setIsSyncing(true);
     try {
@@ -80,13 +81,12 @@ function PortalGatewayContent() {
       
       let foundUrl = '';
       for (let i = 1; i < rows.length; i++) {
-        const cols = rows[i].split(','); // Pisahkan semua kolom
-        const key = cols[0];             // Kolom A (Key)
+        const cols = rows[i].split(','); 
+        const key = cols[0]?.trim();
         
-        if (key && key.trim() === 'GAS_URL') {
-          // 🟢 SOLUSI BERSIH: Langsung comot Kolom B (Indeks 1) saja!
-          // Abaikan sisa kolom lain yang kosong, dan ucapkan selamat tinggal pada .join(',')
-          foundUrl = cols[1].trim().replace(/^"|"$/g, ''); 
+        if (key === 'GAS_URL') {
+          // 🟢 Taktik Presisi
+          foundUrl = cols[1]?.trim().replace(/^"|"$/g, ''); 
           break;
         }
       }
@@ -196,7 +196,6 @@ function PortalGatewayContent() {
           </div>
         </div>
 
-        {/* WIDGET DEBUG MENGAMBANG */}
         <div className="fixed bottom-6 right-6 z-50 group">
           <div className="bg-slate-800/50 backdrop-blur-sm text-slate-500 p-2.5 rounded-full cursor-help hover:bg-slate-800 hover:text-cyan-400 shadow-lg border border-slate-700/50 transition-all duration-300">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
@@ -217,7 +216,6 @@ function PortalGatewayContent() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {/* TOMBOL FORCE REFRESH CACHE BUSTER */}
           <button
             onClick={handleForceRefreshConfig}
             disabled={isSyncing}
@@ -251,12 +249,9 @@ function PortalGatewayContent() {
         >
           ← KEMBALI KE PORTAL DASHBOARD
         </button>
-        
-        
       </div>
       
       <iframe
-        // 🟢 PERBAIKAN 2: Penambahan cachebuster agar iframe ter-refresh saat tombol Hard Refresh ditekan
         src={`${gasUrl}?page=${activeModulParam}&cachebuster=${iframeBuster}`}
         className="w-full flex-1 border-0"
         allowFullScreen
@@ -266,9 +261,6 @@ function PortalGatewayContent() {
   );
 }
 
-// =========================================================================
-// 🟢 WRAPPER SUSPENSE (WAJIB NEXT.JS APP ROUTER)
-// =========================================================================
 export default function CommandCenterGateway() {
   return (
     <Suspense fallback={
