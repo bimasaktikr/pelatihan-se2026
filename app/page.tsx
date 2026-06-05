@@ -3,7 +3,9 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-// Konfigurasi internal status keaktifan menu kuis
+// =========================================================================
+// 🟢 VARIABEL GLOBAL (AMAN DARI SCOPE ERROR)
+// =========================================================================
 const QUIZ_CONFIG = [
   { id: 'PRETEST',    num: '01', title: 'PRETEST',    desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
   { id: 'POST_TEST',  num: '02', title: 'POST TEST',  desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: false },
@@ -12,29 +14,26 @@ const QUIZ_CONFIG = [
   { id: 'PENDALAMAN', num: '05', title: 'PENDALAMAN', desc: 'Studi kasus kompleks penanganan rekapitulasi SLS non-responden.', active: false }
 ];
 
-const [gasUrl, setGasUrl] = useState<string>('');
-const [isLoading, setIsLoading] = useState<boolean>(true);
-const [error, setError] = useState<string>('');
-
-// 🟢 STATE BARU UNTUK FITUR SINKRONISASI PAKSA
-const [isSyncing, setIsSyncing] = useState<boolean>(false);
-const [iframeBuster, setIframeBuster] = useState<number>(Date.now());
-
 const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
 const MATERI_GDRIVE_URL = "https://drive.google.com/drive/folders/1LeTT5syakgNUVtOyuPYIeW6kGrSg_2BJ";
-// Sub-Komponen Utama agar aman dari Error Hydration Build Next.js
+
+// =========================================================================
+// 🟢 KOMPONEN UTAMA
+// =========================================================================
 function PortalGatewayContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 🟢 1. BACA PARAMETER URL SECARA NATIF (Otomatis bertahan saat di-refresh!)
+  // Parameter URL Natif
   const activeModulParam = searchParams.get('modul') || ''; 
 
+  // Kumpulan State (WAJIB di dalam fungsi komponen)
   const [gasUrl, setGasUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   
-  
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [iframeBuster, setIframeBuster] = useState<number>(0); // Di-set 0 awal untuk hindari Hydration Mismatch
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -63,15 +62,44 @@ function PortalGatewayContent() {
     fetchConfig();
   }, []);
 
-  // 🟢 2. MENGUBAH URL SECARA RESMI MELALUI ROUTER NEXT.JS
   const handleQuizClick = (id: string) => {
-    if (id === 'ASYNC_1') {
-      router.push('?modul=Async1');
-    } else if (id === 'ASYNC_2') {
-      router.push('?modul=Async2');
+    if (id === 'ASYNC_1') router.push('?modul=Async1');
+    else if (id === 'ASYNC_2') router.push('?modul=Async2');
+  };
+
+  // Fungsi Force Refresh Config dari Spreadsheet (Anti-Cache)
+  const handleForceRefreshConfig = async () => {
+    setIsSyncing(true);
+    try {
+      const forcedCsvUrl = `${CONFIG_CSV_URL}&timestamp=${Date.now()}`;
+      const response = await fetch(forcedCsvUrl, { cache: 'no-store' });
+      const csvText = await response.text();
+      const rows = csvText.split('\n');
+      
+      let foundUrl = '';
+      for (let i = 1; i < rows.length; i++) {
+        const [key, ...valueArr] = rows[i].split(','); 
+        if (key && key.trim() === 'GAS_URL') {
+          foundUrl = valueArr.join(',').trim().replace(/^"|"$/g, ''); 
+          break;
+        }
+      }
+
+      if (foundUrl) {
+        setGasUrl(foundUrl);
+        setIframeBuster(Date.now()); // Ubah angka iframe buster untuk memaksa reload Iframe
+        alert('⚡ SINKRONISASI SUKSES: GAS_URL terbaru berhasil ditarik dan diterapkan!');
+      } else {
+        alert('⚠️ Master Config terbaca, namun GAS_URL tidak ditemukan.');
+      }
+    } catch (err) {
+      alert('❌ GAGAL RE-FETCH: Koneksi ke server induk terputus.');
+    } finally {
+      setIsSyncing(false);
     }
   };
 
+  // LAYAR LOADING
   if (isLoading) {
     return (
       <div className="w-full h-screen flex flex-col items-center justify-center bg-slate-950 text-cyan-400 font-mono">
@@ -81,21 +109,24 @@ function PortalGatewayContent() {
     );
   }
 
+  // LAYAR ERROR
   if (error || !gasUrl) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-slate-950 text-rose-500">
+      <div className="w-full h-screen flex items-center justify-center bg-slate-950 text-rose-500 flex-col gap-4">
         <p className="font-mono tracking-wider">⚠️ {error}</p>
+        <button onClick={handleForceRefreshConfig} className="bg-rose-600/20 hover:bg-rose-600 border border-rose-500 text-white px-4 py-2 rounded transition">
+          Coba Sinkronisasi Ulang
+        </button>
       </div>
     );
   }
 
-  // 🟢 3. LOGIKA KONTROL VIEW BERDASARKAN URL PARAMETER
+  // LAYAR DASHBOARD MENU UTAMA
   if (activeModulParam === '') {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 flex flex-col items-center relative">
         <div className="w-full max-w-5xl mt-12 animate-fade-in">
           
-          {/* Header Portal */}
           <div className="text-center mb-12 flex flex-col items-center">
             <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
               Portal Evaluasi Sentral
@@ -107,7 +138,6 @@ function PortalGatewayContent() {
               Selamat datang di pusat pengujian kompetensi dan pembelajaran mandiri petugas Sensus Ekonomi 2026.
             </p>
 
-            {/* Tombol Download */}
             <div className="mt-6">
               <a 
                 href={MATERI_GDRIVE_URL}
@@ -117,11 +147,10 @@ function PortalGatewayContent() {
               >
                 <span className="text-base">Buka Repository</span>
                 <span>📂</span>
-                <span>DOWNLOAD MATERI PELATIHAN (GDRIVE)</span>
+                <span>DOWNLOAD MATERI (GDRIVE)</span>
               </a>
             </div>
 
-            {/* Tombol Instruktur */}
             <div className="mt-8">
               <button 
                 onClick={() => router.push('?modul=PortalInstruktur')}
@@ -133,7 +162,6 @@ function PortalGatewayContent() {
             </div>
           </div>
 
-          {/* Grid Kuis Modular */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {QUIZ_CONFIG.map(quiz => (
               quiz.active ? (
@@ -162,24 +190,16 @@ function PortalGatewayContent() {
           </div>
         </div>
 
-        {/* ========================================= */}
-        {/* 🟢 FLOATING DEBUG WIDGET (POJOK KANAN BAWAH) */}
-        {/* ========================================= */}
+        {/* WIDGET DEBUG MENGAMBANG */}
         <div className="fixed bottom-6 right-6 z-50 group">
-          {/* Ikon Bug / Info */}
           <div className="bg-slate-800/50 backdrop-blur-sm text-slate-500 p-2.5 rounded-full cursor-help hover:bg-slate-800 hover:text-cyan-400 shadow-lg border border-slate-700/50 transition-all duration-300">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-            </svg>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
           </div>
-          
-          {/* Panel Rahasia (Hanya Muncul Saat Di-hover) */}
           <div className="absolute bottom-full right-0 mb-3 hidden group-hover:block w-max max-w-sm bg-slate-900/95 backdrop-blur-md border border-slate-700 p-4 rounded-xl shadow-2xl text-xs font-mono text-slate-300 animate-fade-in pointer-events-none">
             <div className="flex items-center gap-2 border-b border-slate-700 pb-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
               <p className="font-black text-cyan-400 tracking-widest uppercase">System Diagnostics</p>
             </div>
-            
             <div className="space-y-2">
               <div>
                 <p className="text-slate-500 font-bold mb-0.5">TARGET_GAS_URL:</p>
@@ -190,17 +210,13 @@ function PortalGatewayContent() {
             </div>
           </div>
         </div>
-        {/* ========================================= */}
-
       </div>
     );
   }
 
-  // 🟢 4. LAYAR SUB-IFRAME RUNNER (JIKA PARAMETER URL TERISI)
-  // 🟢 4. LAYAR SUB-IFRAME RUNNER (JIKA PARAMETER URL TERISI)
+  // LAYAR RUNNER KUIS (IFRAME)
   return (
     <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden relative">
-      {/* Top Utility Bar */}
       <div className="bg-slate-950 border-b border-slate-800 p-3 flex justify-between items-center shadow-md z-10">
         <button 
           onClick={() => router.push('/')} 
@@ -210,34 +226,28 @@ function PortalGatewayContent() {
         </button>
         
         <div className="flex items-center gap-4">
-          {/* 🟢 TOMBOL BARU: FORCE HARD SYNC CONFIG */}
+          {/* TOMBOL FORCE REFRESH CACHE BUSTER */}
           <button
             onClick={handleForceRefreshConfig}
             disabled={isSyncing}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold border transition flex items-center gap-2 select-none ${
+            className={`px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-mono font-bold border transition flex items-center gap-2 select-none ${
               isSyncing 
                 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 cursor-wait' 
                 : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-cyan-500 hover:text-cyan-400'
             }`}
-            title="Klik jika Anda baru saja mengubah kode di GAS atau memparbarui Spreadsheet Config"
+            title="Tarik versi GAS_URL terbaru dari spreadsheet"
           >
-            <svg 
-              className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} 
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+            <svg className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             {isSyncing ? 'MEMAKSA RE-FETCH...' : 'HARD REFRESH CONFIG'}
           </button>
 
-          <div className="text-cyan-500 font-mono text-xs font-bold tracking-widest animate-pulse flex items-center gap-1.5">
+          <div className="text-cyan-500 font-mono text-xs font-bold tracking-widest animate-pulse flex items-center gap-1.5 hidden sm:flex">
             <span className="w-2 h-2 rounded-full bg-cyan-500 block"></span>
             REKOR DATA AKTIF
           </div>
         </div>
       </div>
       
-      {/* 🟢 IFRAME DI-SUNTIK DENGAN IFRAME_BUSTER STATE */}
       <iframe
         src={`${gasUrl}?page=${activeModulParam}&cachebuster=${iframeBuster}`}
         className="w-full flex-1 border-0"
@@ -248,48 +258,14 @@ function PortalGatewayContent() {
   );
 }
 
-// 🟢 FUNGSI EKSEKUTOR: MEMAKSA AMBIL CONFIG PALING MURNI DARI SPREADSHEET
-  const handleForceRefreshConfig = async () => {
-    setIsSyncing(true);
-    try {
-      // Trik Jitu: Tambahkan timestamp unik pada URL CSV agar Google Server terpaksa 
-      // memberikan data ter-update saat itu juga, bypass CDN Cache!
-      const forcedCsvUrl = `${CONFIG_CSV_URL}&timestamp=${Date.now()}`;
-      
-      const response = await fetch(forcedCsvUrl, { cache: 'no-store' });
-      const csvText = await response.text();
-      const rows = csvText.split('\n');
-      
-      let foundUrl = '';
-      for (let i = 1; i < rows.length; i++) {
-        const [key, ...valueArr] = rows[i].split(','); 
-        if (key && key.trim() === 'GAS_URL') {
-          foundUrl = valueArr.join(',').trim().replace(/^"|"$/g, ''); 
-          break;
-        }
-      }
-
-      if (foundUrl) {
-        setGasUrl(foundUrl);
-        // Paksa Iframe untuk reload muatan naskah kodenya
-        setIframeBuster(Date.now());
-        alert('⚡ SINKRONISASI SUKSES: GAS_URL terbaru berhasil diterapkan ke Iframe!');
-      } else {
-        alert('⚠️ Master Config terbaca, namun GAS_URL tidak ditemukan.');
-      }
-    } catch (err) {
-      alert('❌ GAGAL RE-FETCH: Koneksi ke server induk Command Center terputus.');
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-
-// Wrapper Suspense (Wajib di Next.js App Router saat memakai useSearchParams)
+// =========================================================================
+// 🟢 WRAPPER SUSPENSE (WAJIB NEXT.JS APP ROUTER)
+// =========================================================================
 export default function CommandCenterGateway() {
   return (
     <Suspense fallback={
       <div className="w-full h-screen flex flex-col items-center justify-center bg-slate-950 text-cyan-400 font-mono">
+        <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="animate-pulse tracking-widest text-sm">MEMUAT ENGINE NAVIGASI...</p>
       </div>
     }>
