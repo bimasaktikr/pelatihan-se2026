@@ -64,7 +64,8 @@ function PortalGatewayContent() {
 
   const handleQuizClick = (id: string) => {
     if (id === 'ASYNC_1') router.push('?modul=Async1');
-    else if (id === 'ASYNC_2') router.push('?modul=Async2');
+    else if (id === 'ASYNC_2') router.push('?modul=Async2')
+    else if (id === 'PENDALAMAN') router.push('?modul=Pendalaman');
   };
 
   // Fungsi Force Refresh Config dari Spreadsheet (Anti-Cache)
