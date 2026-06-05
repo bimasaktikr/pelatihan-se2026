@@ -20,6 +20,8 @@ const [error, setError] = useState<string>('');
 const [isSyncing, setIsSyncing] = useState<boolean>(false);
 const [iframeBuster, setIframeBuster] = useState<number>(Date.now());
 
+const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
+const MATERI_GDRIVE_URL = "https://drive.google.com/drive/folders/1LeTT5syakgNUVtOyuPYIeW6kGrSg_2BJ";
 // Sub-Komponen Utama agar aman dari Error Hydration Build Next.js
 function PortalGatewayContent() {
   const router = useRouter();
@@ -32,8 +34,7 @@ function PortalGatewayContent() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   
-  const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
-  const MATERI_GDRIVE_URL = "https://drive.google.com/drive/folders/1LeTT5syakgNUVtOyuPYIeW6kGrSg_2BJ";
+  
 
   useEffect(() => {
     const fetchConfig = async () => {
