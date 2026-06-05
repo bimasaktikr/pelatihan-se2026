@@ -33,7 +33,7 @@ function PortalGatewayContent() {
   const [error, setError] = useState<string>('');
   
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
-  const [iframeBuster, setIframeBuster] = useState<number>(0); // Di-set 0 awal untuk hindari Hydration Mismatch
+  const [iframeBuster, setIframeBuster] = useState<number>(0);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -46,7 +46,8 @@ function PortalGatewayContent() {
         for (let i = 1; i < rows.length; i++) {
           const [key, ...valueArr] = rows[i].split(','); 
           if (key && key.trim() === 'GAS_URL') {
-            foundUrl = valueArr.join(',').trim().replace(/^"|"$/g, ''); 
+            // 🟢 PERBAIKAN 1: Pembersih Koma di Initial Load
+            foundUrl = valueArr.join(',').replace(/,+$/, '').trim().replace(/^"|"$/g, ''); 
             break;
           }
         }
@@ -77,11 +78,10 @@ function PortalGatewayContent() {
       const csvText = await response.text();
       const rows = csvText.split('\n');
       
-     let foundUrl = '';
+      let foundUrl = '';
         for (let i = 1; i < rows.length; i++) {
           const [key, ...valueArr] = rows[i].split(','); 
           if (key && key.trim() === 'GAS_URL') {
-            // Ganti baris di bawah ini:
             foundUrl = valueArr.join(',').replace(/,+$/, '').trim().replace(/^"|"$/g, ''); 
             break;
           }
@@ -89,7 +89,7 @@ function PortalGatewayContent() {
 
       if (foundUrl) {
         setGasUrl(foundUrl);
-        setIframeBuster(Date.now()); // Ubah angka iframe buster untuk memaksa reload Iframe
+        setIframeBuster(Date.now()); 
         alert('⚡ SINKRONISASI SUKSES: GAS_URL terbaru berhasil ditarik dan diterapkan!');
       } else {
         alert('⚠️ Master Config terbaca, namun GAS_URL tidak ditemukan.');
@@ -252,7 +252,8 @@ function PortalGatewayContent() {
       </div>
       
       <iframe
-        src={`${gasUrl}?page=${activeModulParam}`}
+        // 🟢 PERBAIKAN 2: Penambahan cachebuster agar iframe ter-refresh saat tombol Hard Refresh ditekan
+        src={`${gasUrl}?page=${activeModulParam}&cachebuster=${iframeBuster}`}
         className="w-full flex-1 border-0"
         allowFullScreen
         title="Kuis Evaluasi Lapangan SE2026"
