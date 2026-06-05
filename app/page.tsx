@@ -81,7 +81,7 @@ function PortalGatewayContent() {
       for (let i = 1; i < rows.length; i++) {
         const [key, ...valueArr] = rows[i].split(','); 
         if (key && key.trim() === 'GAS_URL') {
-          foundUrl = valueArr.join(',').trim().replace(/^"|"$/g, ''); 
+          foundUrl = valueArr.join('').trim().replace(/^"|"$/g, ''); 
           break;
         }
       }
