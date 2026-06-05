@@ -79,14 +79,17 @@ function PortalGatewayContent() {
       const rows = csvText.split('\n');
       
       let foundUrl = '';
-        for (let i = 1; i < rows.length; i++) {
-          const [key, ...valueArr] = rows[i].split(','); 
-          if (key && key.trim() === 'GAS_URL') {
-            // foundUrl = valueArr.join(',').replace(/,+$/, '').trim().replace(/^"|"$/g, ''); 
-            foundUrl = cols[1].trim().replace(/^"|"$/g, '');
-            break;
-          }
+      for (let i = 1; i < rows.length; i++) {
+        const cols = rows[i].split(','); // Pisahkan semua kolom
+        const key = cols[0];             // Kolom A (Key)
+        
+        if (key && key.trim() === 'GAS_URL') {
+          // 🟢 SOLUSI BERSIH: Langsung comot Kolom B (Indeks 1) saja!
+          // Abaikan sisa kolom lain yang kosong, dan ucapkan selamat tinggal pada .join(',')
+          foundUrl = cols[1].trim().replace(/^"|"$/g, ''); 
+          break;
         }
+      }
 
       if (foundUrl) {
         setGasUrl(foundUrl);
