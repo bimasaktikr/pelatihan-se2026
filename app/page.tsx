@@ -83,7 +83,7 @@ function PortalGatewayContent() {
   // 🟢 3. LOGIKA KONTROL VIEW BERDASARKAN URL PARAMETER
   if (activeModulParam === '') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 flex flex-col items-center">
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 flex flex-col items-center relative">
         <div className="w-full max-w-5xl mt-12 animate-fade-in">
           
           {/* Header Portal */}
@@ -152,13 +152,44 @@ function PortalGatewayContent() {
             ))}
           </div>
         </div>
+
+        {/* ========================================= */}
+        {/* 🟢 FLOATING DEBUG WIDGET (POJOK KANAN BAWAH) */}
+        {/* ========================================= */}
+        <div className="fixed bottom-6 right-6 z-50 group">
+          {/* Ikon Bug / Info */}
+          <div className="bg-slate-800/50 backdrop-blur-sm text-slate-500 p-2.5 rounded-full cursor-help hover:bg-slate-800 hover:text-cyan-400 shadow-lg border border-slate-700/50 transition-all duration-300">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+          </div>
+          
+          {/* Panel Rahasia (Hanya Muncul Saat Di-hover) */}
+          <div className="absolute bottom-full right-0 mb-3 hidden group-hover:block w-max max-w-sm bg-slate-900/95 backdrop-blur-md border border-slate-700 p-4 rounded-xl shadow-2xl text-xs font-mono text-slate-300 animate-fade-in pointer-events-none">
+            <div className="flex items-center gap-2 border-b border-slate-700 pb-2 mb-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+              <p className="font-black text-cyan-400 tracking-widest uppercase">System Diagnostics</p>
+            </div>
+            
+            <div className="space-y-2">
+              <div>
+                <p className="text-slate-500 font-bold mb-0.5">TARGET_GAS_URL:</p>
+                <p className="break-all text-green-400 bg-slate-950 p-1.5 rounded border border-slate-800 selection:bg-cyan-900">
+                  {gasUrl || '⚠️ Menunggu Fetch...'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* ========================================= */}
+
       </div>
     );
   }
 
   // 🟢 4. LAYAR SUB-IFRAME RUNNER (JIKA PARAMETER URL TERISI)
   return (
-    <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden">
+    <div className="w-full h-screen flex flex-col bg-slate-900 overflow-hidden relative">
       {/* Top Utility Bar */}
       <div className="bg-slate-950 border-b border-slate-800 p-3 flex justify-between items-center shadow-md z-10">
         <button 
