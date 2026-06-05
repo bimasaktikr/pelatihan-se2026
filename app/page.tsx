@@ -77,14 +77,15 @@ function PortalGatewayContent() {
       const csvText = await response.text();
       const rows = csvText.split('\n');
       
-      let foundUrl = '';
-      for (let i = 1; i < rows.length; i++) {
-        const [key, ...valueArr] = rows[i].split(','); 
-        if (key && key.trim() === 'GAS_URL') {
-          foundUrl = valueArr.join('').trim().replace(/^"|"$/g, ''); 
-          break;
+     let foundUrl = '';
+        for (let i = 1; i < rows.length; i++) {
+          const [key, ...valueArr] = rows[i].split(','); 
+          if (key && key.trim() === 'GAS_URL') {
+            // Ganti baris di bawah ini:
+            foundUrl = valueArr.join(',').replace(/,+$/, '').trim().replace(/^"|"$/g, ''); 
+            break;
+          }
         }
-      }
 
       if (foundUrl) {
         setGasUrl(foundUrl);
