@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 // 🟢 VARIABEL GLOBAL
 // =========================================================================
 const QUIZ_CONFIG = [
-  { id: 'PRETEST',    num: '01', title: 'PRETEST',    desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: false },
+  { id: 'PRETEST',    num: '01', title: 'PRETEST',    desc: 'Uji kompetensi awal sebelum pemaparan materi sensus.', active: true },
   { id: 'POST_TEST',  num: '02', title: 'POST TEST',  desc: 'Uji capaian akhir setelah seluruh rangkaian pelatihan selesai.', active: true },
   { id: 'ASYNC_1',    num: '03', title: 'ASYNC 1',    desc: 'Tugas Latihan Hari Pertama - Kasus Keluarga Pak Amran.', active: true },
   { id: 'ASYNC_2',    num: '04', title: 'ASYNC 2',    desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: true },
@@ -70,6 +70,7 @@ function PortalGatewayContent() {
     else if (id === 'ASYNC_2') router.push('?modul=Async2')
     else if (id === 'PENDALAMAN') router.push('?modul=Pendalaman');
     else if (id === 'POST_TEST') window.open('https://forms.gle/DmRrPEmDEfmWQtkC6', '_blank');
+    else if (id === 'PRE_TEST') window.open('https://docs.google.com/forms/d/e/1FAIpQLSeI7zHMFrEEtF7GgrFuX1GojTWqQAbg1H1mA2ySEF1i7CRxOA/viewform', '_blank');
     else if (id === 'EVALUASI') router.push('?modul=evaluasi'); // 🟢 RUTE BARU
   };
 
