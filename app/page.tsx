@@ -72,6 +72,8 @@ function PortalGatewayContent() {
     else if (id === 'POST_TEST') window.open('https://forms.gle/DmRrPEmDEfmWQtkC6', '_blank');
     else if (id === 'PRETEST') window.open('https://docs.google.com/forms/d/e/1FAIpQLSeI7zHMFrEEtF7GgrFuX1GojTWqQAbg1H1mA2ySEF1i7CRxOA/viewform', '_blank');
     else if (id === 'EVALUASI') router.push('?modul=evaluasi'); // 🟢 RUTE BARU
+    // 🟢 TAMBAHKAN INI (Hanya untuk Admin/Instruktur yang tahu link-nya)
+    else if (id === 'ADMIN_EVALUASI') router.push('?modul=adminevaluasi');
   };
 
   // Fungsi Force Refresh Config dari Spreadsheet
