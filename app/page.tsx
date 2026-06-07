@@ -165,23 +165,15 @@ function PortalGatewayContent() {
               </a>
             </div>
 
-            <div className="mt-8">
-              <button 
-                onClick={() => router.push('?modul=PortalInstruktur')}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-lg shadow-lg shadow-indigo-500/30 transition flex items-center justify-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                Login Portal Instruktur
-              </button>
-
-              {/* 🟢 TOMBOL LOGIN EVALUASI BARU */}
-              <button 
-                onClick={() => router.push('?modul=PortalEvaluasiLogin')}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-lg shadow-lg transition flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                Login Evaluasi
-              </button>
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden mt-6">
+              <thead className="bg-slate-800/80 backdrop-blur-sm text-slate-300">
+                <tr>
+                  <th className="p-5 text-left font-bold tracking-wider uppercase text-[11px]">Nama Peserta</th>
+                  <th className="p-5 text-center font-bold tracking-wider uppercase text-[11px]">Pre Test</th>
+                  </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                </tbody>
             </div>
 
             
