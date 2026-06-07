@@ -165,15 +165,55 @@ function PortalGatewayContent() {
               </a>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden mt-6">
-              <thead className="bg-slate-800/80 backdrop-blur-sm text-slate-300">
-                <tr>
-                  <th className="p-5 text-left font-bold tracking-wider uppercase text-[11px]">Nama Peserta</th>
-                  <th className="p-5 text-center font-bold tracking-wider uppercase text-[11px]">Pre Test</th>
-                  </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                </tbody>
+            <div className="mt-10 w-full max-w-2xl mx-auto">
+              {/* Kontainer Utama: Stacking di HP, Grid 2 Kolom di Tablet/Laptop */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {/* PORTAL 1: LOGIN INSTRUKTUR (TEMA INDIGO/BLUE) */}
+                <button 
+                  onClick={() => router.push('?modul=PortalInstruktur')}
+                  className="group relative flex items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 shadow-lg hover:shadow-indigo-500/10 transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Lingkaran Ikon */}
+                    <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white flex items-center justify-center transition-colors duration-200">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    {/* Teks Deskripsi */}
+                    <div className="text-left">
+                      <p className="text-xs font-bold font-mono tracking-wider text-indigo-400 uppercase">Akses Panel</p>
+                      <p className="text-sm font-black text-slate-200 mt-0.5">Login Instruktur</p>
+                    </div>
+                  </div>
+                  {/* Panah Indikator */}
+                  <span className="text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all duration-200 text-sm">➔</span>
+                </button>
+
+                {/* PORTAL 2: LOGIN EVALUASI (TEMA EMERALD/GREEN) */}
+                <button 
+                  onClick={() => router.push('?modul=PortalEvaluasi')}
+                  className="group relative flex items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/50 shadow-lg hover:shadow-emerald-500/10 transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Lingkaran Ikon */}
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition-colors duration-200">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                      </svg>
+                    </div>
+                    {/* Teks Deskripsi */}
+                    <div className="text-left">
+                      <p className="text-xs font-bold font-mono tracking-wider text-emerald-400 uppercase">Monitoring Sentral</p>
+                      <p className="text-sm font-black text-slate-200 mt-0.5">Login Evaluasi</p>
+                    </div>
+                  </div>
+                  {/* Panah Indikator */}
+                  <span className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all duration-200 text-sm">➔</span>
+                </button>
+
+              </div>
             </div>
 
             
