@@ -13,13 +13,13 @@ const QUIZ_CONFIG = [
   { id: 'ASYNC_2',    num: '04', title: 'ASYNC 2',    desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: true },
   { id: 'PENDALAMAN', num: '05', title: 'PENDALAMAN', desc: 'Soal Pendalaman Pelatihan SE2026', active: true },
   { id: 'EVALUASI',   num: '06', title: 'EVALUASI',   desc: 'Form Penilaian dan Evaluasi Kinerja Penyelenggaraan Pelatihan.', active: true }, // 🟢 MODUL BARU
-  {
-    id: 'RANDOM_NAMA',
-    num: '07',
-    title: 'RANDOM NAMA',
-    desc: 'Lucky Draw dan Pemilihan Peserta Acak',
-    active: true
-  }
+  // {
+  //   id: 'RANDOM_NAMA',
+  //   num: '07',
+  //   title: 'RANDOM NAMA',
+  //   desc: 'Lucky Draw dan Pemilihan Peserta Acak',
+  //   active: true
+  // }
 ];
 
 const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
