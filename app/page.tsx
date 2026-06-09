@@ -12,7 +12,14 @@ const QUIZ_CONFIG = [
   { id: 'ASYNC_1',    num: '03', title: 'ASYNC 1',    desc: 'Tugas Latihan Hari Pertama - Kasus Keluarga Pak Amran.', active: true },
   { id: 'ASYNC_2',    num: '04', title: 'ASYNC 2',    desc: 'Pendalaman mandiri pengisian aplikasi pengolahan data lapangan.', active: true },
   { id: 'PENDALAMAN', num: '05', title: 'PENDALAMAN', desc: 'Soal Pendalaman Pelatihan SE2026', active: true },
-  { id: 'EVALUASI',   num: '06', title: 'EVALUASI',   desc: 'Form Penilaian dan Evaluasi Kinerja Penyelenggaraan Pelatihan.', active: true } // 🟢 MODUL BARU
+  { id: 'EVALUASI',   num: '06', title: 'EVALUASI',   desc: 'Form Penilaian dan Evaluasi Kinerja Penyelenggaraan Pelatihan.', active: true }, // 🟢 MODUL BARU
+  {
+    id: 'RANDOM_NAMA',
+    num: '07',
+    title: 'RANDOM NAMA',
+    desc: 'Lucky Draw dan Pemilihan Peserta Acak',
+    active: true
+  }
 ];
 
 const CONFIG_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS0ASuvyBBfg9ujkgKXJMNtYuHcG8Sp5Vi5nohOYvNw8dMZ1lNcHRbBudC2-AzRoBl1rMLYD1RsaeQV/pub?gid=1943593608&single=true&output=csv";
@@ -75,6 +82,7 @@ function PortalGatewayContent() {
     else if (id === 'EVALUASI') router.push('?modul=evaluasi'); // 🟢 RUTE BARU
     // 🟢 TAMBAHKAN INI (Hanya untuk Admin/Instruktur yang tahu link-nya)
     else if (id === 'ADMIN_EVALUASI') router.push('?modul=adminevaluasi');
+    // else if (id === 'RANDOM_NAMA') router.push('?modul=randomnama');
   };
 
   // Fungsi Force Refresh Config dari Spreadsheet
@@ -281,6 +289,17 @@ function PortalGatewayContent() {
             {isSyncing ? 'MEMAKSA RE-FETCH...' : 'HARD REFRESH CONFIG'}
           </button>
 
+            <button
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+              onClick={() =>
+                window.open(
+                  "https://script.google.com/macros/s/AKFYCBxxxxxxxxxxxxxxxxxxxxxxxx/exec?page=luckydraw",
+                  "_blank"
+                )
+              }
+            >
+              🎰 Lucky Draw
+            </button>
           <div className="text-cyan-500 font-mono text-xs font-bold tracking-widest animate-pulse flex items-center gap-1.5 hidden sm:flex">
             <span className="w-2 h-2 rounded-full bg-cyan-500 block"></span>
             REKOR DATA AKTIF
