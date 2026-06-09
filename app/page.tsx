@@ -290,13 +290,8 @@ function PortalGatewayContent() {
           </button>
 
             <button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
-              onClick={() =>
-                window.open(
-                  "https://script.google.com/macros/s/AKFYCBxxxxxxxxxxxxxxxxxxxxxxxx/exec?page=luckydraw",
-                  "_blank"
-                )
-              }
+              className="bg-yellow-500 hover:bg-yellow-600 text-black"
+              onClick={() => router.push('?modul=randomnama')}
             >
               🎰 Lucky Draw
             </button>
