@@ -288,13 +288,20 @@ function PortalGatewayContent() {
             <svg className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             {isSyncing ? 'MEMAKSA RE-FETCH...' : 'HARD REFRESH CONFIG'}
           </button>
-
-            <button
-              className="bg-yellow-500 hover:bg-yellow-600 text-black"
-              onClick={() => router.push('?modul=randomnama')}
-            >
-              🎰 Lucky Draw
-            </button>
+          <button
+            onClick={() => router.push('?modul=luckydraw')}
+            disabled={isSyncing}
+            className={`px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-mono font-bold border transition flex items-center gap-2 select-none ${
+              isSyncing 
+                ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 cursor-wait' 
+                : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-cyan-500 hover:text-cyan-400'
+            }`}
+            title="Random Orang"
+          >
+            <svg className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            🎰 Lucky Draw
+          </button>
+      
           <div className="text-cyan-500 font-mono text-xs font-bold tracking-widest animate-pulse flex items-center gap-1.5 hidden sm:flex">
             <span className="w-2 h-2 rounded-full bg-cyan-500 block"></span>
             REKOR DATA AKTIF
