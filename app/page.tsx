@@ -76,7 +76,7 @@ function PortalGatewayContent() {
     if (id === 'ASYNC_1') router.push('?modul=Async1');
     else if (id === 'ASYNC_2') router.push('?modul=Async2')
     else if (id === 'PENDALAMAN') router.push('?modul=Pendalaman');
-    else if (id === 'POST_TEST') window.open('https://docs.google.com/forms/d/e/1FAIpQLScPT4VZGNRdR7Uz9766Gc01EEBsCULkJ0pm50UvKUKuTEA6fw/viewform?usp=header', '_blank');
+    else if (id === 'POST_TEST') window.open('https://docs.google.com/forms/d/e/1FAIpQLSfW4Jn7myxYt4rbj86iiBgSjaT6CeiuZgfBFymq29dbedC8kA/viewform?usp=header', '_blank');
     else if (id === 'PRETEST') 
         window.open('https://docs.google.com/forms/d/e/1FAIpQLSeI7zHMFrEEtF7GgrFuX1GojTWqQAbg1H1mA2ySEF1i7CRxOA/viewform', '_blank');
     else if (id === 'EVALUASI') router.push('?modul=evaluasi'); // 🟢 RUTE BARU
